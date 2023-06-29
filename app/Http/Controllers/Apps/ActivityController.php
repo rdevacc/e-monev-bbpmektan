@@ -8,6 +8,7 @@ use App\Models\Activity;
 use App\Models\Field;
 use App\Models\Group;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -369,5 +370,36 @@ class ActivityController extends Controller
         // }, 'E-Monev BBPSI Mektan' . ' - ' . $current_month . '.xlsx');
 
         return Excel::download(new ActivityExport($request->sfi, $request->sgi, $request->sui), 'E-Monev BBPSI Mektan' . ' - ' . $current_month . '.xlsx');
+    }
+
+    public function pdf(Request $request)
+    {
+        $current_month = Carbon::parse(now())->translatedFormat('F Y');
+        $current_month1 = Carbon::parse(now())->translatedFormat('m');
+        $next_month = Carbon::parse(now()->addMonth(1))->translatedFormat('F');
+        $sfi = $request->sfi;
+        $sgi = $request->sgi;
+        $sui = $request->sui;
+
+        if (($sfi == "undefined" || $sfi == null) &&  ($sgi == "undefined" || $sgi == null) && ($sui == "undefined" || $sui == null)) {
+            $activities = Activity::with('user', 'group', 'field')->whereMonth('created_at',  now('F'))->latest()->get();
+        } else {
+            $activities = Activity::with('user', 'group', 'field')->where(function ($query) use ($sfi, $sgi, $sui) {
+                $query->where('field_id', '=', $sfi)
+                    ->orWhere('group_id', '=', $sgi)
+                    ->orWhere('user_id', '=', $sui);
+            })->whereMonth('created_at', $current_month1)->latest()->get();
+        }
+
+
+        // $pdf = Pdf::loadView('exports.export_pdf', compact('current_month', 'next_month', 'activities'));
+
+        if (($sfi == "undefined" || $sfi == null) &&  ($sgi == "undefined" || $sgi == null) && ($sui == "undefined" || $sui == null)) {
+            $pdf = Pdf::loadView('exports.export_all_pdf', compact('current_month', 'next_month', 'activities'));
+        } else {
+            $pdf = Pdf::loadView('exports.export_pdf', compact('current_month', 'next_month', 'activities'));
+        }
+        return $pdf->stream();
+        // return $pdf->download('E-Monev BBPSI Mektan' . ' - ' . $current_month . '.pdf');
     }
 }
