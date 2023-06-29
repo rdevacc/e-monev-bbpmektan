@@ -89,7 +89,8 @@
                                         <a :href="`/apps/activities/export?sfi=${fieldSearchId}&sgi=${groupSearchId}&sui=${userSearchId}`"
                                             target="_blank" class="btn btn-success btn-md border-0 shadow me-3"><i
                                                 class="fa fa-file-excel"></i> EXCEL</a>
-                                        <a href="#" target="_blank" class="btn btn-danger btn-md border-0 shadow"><i
+                                        <a :href="`/apps/activities/export-pdf?sfi=${fieldSearchId}&sgi=${groupSearchId}&sui=${userSearchId}`"
+                                            target="_blank" class="btn btn-danger btn-md border-0 shadow"><i
                                                 class="fa fa-file-pdf"></i> PDF</a>
                                     </div>
                                     <div class="table-responsive">

@@ -54,8 +54,11 @@ Route::prefix('apps')->group(function () {
         // Route Filter Activities
         Route::get('/activities/filter', [ActivityController::class, 'filter'])->name('apps.activities.filter');
 
-        // Route Activity Export
+        // Route Activity Export EXCEL
         Route::get('/activities/export', [ActivityController::class, 'export'])->name('apps.activity.export');
+
+        // Route Activity Export PDF
+        Route::get('/activities/export-pdf', [ActivityController::class, 'pdf'])->name('apps.activity.export-pdf');
 
         // Route Activities
         Route::resource('/activities', ActivityController::class, ['as' => 'apps'])
